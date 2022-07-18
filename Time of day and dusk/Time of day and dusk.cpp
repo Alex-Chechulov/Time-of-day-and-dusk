@@ -313,7 +313,7 @@ map<string, map<int, map<string, map<int, vector<string>>>>> data_preparation()
     map<int, map<string, map<int, vector<string>>>>leap = { { 1,january_numbered} ,{ 2,february_numbered},
         { 3,march_numbered}, { 4,april_numbered}, { 5,may_numbered}, { 6,june_numbered}, { 7,july_numbered}, { 8,august_numbered},
         { 9,september_numbered}, { 10,october_numbered}, { 11,november_numbered}, { 12,december_numbered} };
-    return { {"Невисокосный",not_leap },{"Високосный",leap} };
+    return { {"Високосный",leap},{"Невисокосный",not_leap } };
 }
 
 void time_voshode(map<string, map<int, map<string, map<int, vector<string>>>>>& data) {
@@ -325,26 +325,53 @@ void time_voshode(map<string, map<int, map<string, map<int, vector<string>>>>>& 
                     Mon = number_of_month.first;
                     Calculation();
                     string TimeRise_h_S, TimeRise_m_S, TimeSet_h_S, TimeSet_m_S, BeginSum_h_S, BeginSum_m_S, EndSum_h_S, EndSum_m_S;
-                    if (BeginSum_h < 10) BeginSum_h_S = "0" + to_string(BeginSum_h);
+                    string polar = "полярная ситуация";
+                    if (BeginSum_h == -1) BeginSum_h_S = polar;
+                    else if (BeginSum_h < 10) BeginSum_h_S = "0" + to_string(BeginSum_h);
                     else BeginSum_h_S = to_string(BeginSum_h);
-                    if (BeginSum_m < 10)BeginSum_m_S = "0" + to_string(BeginSum_m);
+                    if (BeginSum_m == -1) BeginSum_m_S = polar;
+                    else if (BeginSum_m < 10)BeginSum_m_S = "0" + to_string(BeginSum_m);
                     else BeginSum_m_S = to_string(BeginSum_m);
-                    if (TimeRise_h < 10)TimeRise_h_S = "0" + to_string(TimeRise_h);
+                    if (TimeRise_h == -1) TimeRise_h_S = polar;
+                    else if (TimeRise_h < 10)TimeRise_h_S = "0" + to_string(TimeRise_h);
                     else TimeRise_h_S = to_string(TimeRise_h);
-                    if (TimeRise_m < 10)TimeRise_m_S = "0" + to_string(TimeRise_m);
+                    if (TimeRise_m == -1) TimeRise_m_S = polar;
+                    else if (TimeRise_m < 10)TimeRise_m_S = "0" + to_string(TimeRise_m);
                     else TimeRise_m_S = to_string(TimeRise_m);
-                    if (TimeSet_h < 10) TimeSet_h_S = "0" + to_string(TimeSet_h);
+                    if (TimeSet_h == -1)TimeSet_h_S = polar;
+                    else if (TimeSet_h < 10) TimeSet_h_S = "0" + to_string(TimeSet_h);
                     else TimeSet_h_S = to_string(TimeSet_h);
-                    if (TimeSet_m < 10)TimeSet_m_S = "0" + to_string(TimeSet_m);
+                    if (TimeSet_m == -1)TimeSet_m_S = polar;
+                    else if (TimeSet_m < 10)TimeSet_m_S = "0" + to_string(TimeSet_m);
                     else TimeSet_m_S = to_string(TimeSet_m);
-                    if (EndSum_h < 10)EndSum_h_S = "0" + to_string(EndSum_h);
+                    if (EndSum_h == -1) EndSum_h_S = polar;
+                    else if (EndSum_h < 10)EndSum_h_S = "0" + to_string(EndSum_h);
                     else EndSum_h_S = to_string(EndSum_h);
-                    if (EndSum_m < 10)EndSum_m_S = "0" + to_string(EndSum_m);
+                    if (EndSum_m == -1) EndSum_m_S = polar;
+                    else if (EndSum_m < 10)EndSum_m_S = "0" + to_string(EndSum_m);
                     else EndSum_m_S = to_string(EndSum_m);
-                    days.second[0] = BeginSum_h_S + "." + BeginSum_m_S;
-                    days.second[1] = TimeRise_h_S + "." + TimeRise_m_S;
-                    days.second[2] = TimeSet_h_S + "." + TimeSet_m_S;
-                    days.second[3] = EndSum_h_S + "." + EndSum_m_S;
+
+                    if (BeginSum_h_S == polar)
+                    {
+                        days.second[0] = polar;
+                        days.second[3] = polar;
+                    }
+                    else
+                    {
+                        days.second[0] = BeginSum_h_S + "." + BeginSum_m_S;
+                        days.second[3] = EndSum_h_S + "." + EndSum_m_S;
+                    }
+
+                    if (TimeRise_h_S == polar)
+                    {
+                        days.second[1] = polar;
+                        days.second[2] = polar;
+                    }
+                    else
+                    {
+                        days.second[1] = TimeRise_h_S + "." + TimeRise_m_S;
+                        days.second[2] = TimeSet_h_S + "." + TimeSet_m_S;
+                    }
                 }
             }
         }
@@ -372,10 +399,10 @@ void recording_data(map<string, map<int, map<string, map<int, vector<string>>>>>
                     file << "  " << "\"" << name_of_month.first << "\"\n  {\n";
                     for (const auto& days : name_of_month.second) {//days.first - номер дня;days.second - вектор значений
                         file << "   \"" << days.first << "\"\n   {\n";
-                        file << "     \"Сумерки начало\"=\"" << days.second[0] << "\"\n";
                         file << "     \"День начало\"=\"" << days.second[1] << "\"\n";
                         file << "     \"День конец\"=\"" << days.second[2] << "\"\n";
                         file << "     \"Сумерки конец\"=\"" << days.second[3] << "\"\n";
+                        file << "     \"Сумерки начало\"=\"" << days.second[0] << "\"\n";
                         file << "   }\n";
                     }
                     file << "  }\n";
@@ -392,14 +419,19 @@ int main()
     SetConsoleCP(1251);// установка кодовой страницы win-cp 1251 в поток ввода
     SetConsoleOutputCP(1251); // установка кодовой страницы win-cp 1251 в поток вывода
     map<string, map<int, map<string, map<int, vector<string>>>>> data = data_preparation();
-    cout << "Введите Город(одним словом, без пробелов): ";
-    cin >> Name_City;
-    cout << "Введите часовой пояс(знак направления и целое значение пояса): ";
-    cin >> Watch;
-    cout << "Введите широту(без минут и секунд, в долях градуса): ";
-    cin >> Latitude;
-    cout << "Введите долготу(без минут и секунд, в долях градуса): ";
-    cin >> Longitude;
+    Name_City = "ЧерскийМой";
+    Watch = 0;
+    Latitude = 68.7516666666666666666666666666666667;
+    Longitude = 161.3297222222222222222222222222;
+
+    //cout << "Введите Город(одним словом, без пробелов): ";
+    //cin >> Name_City;
+    //cout << "Введите часовой пояс(знак направления и целое значение пояса): ";
+    //cin >> Watch;
+    //cout << "Введите широту(без минут и секунд, в долях градуса): ";
+    //cin >> Latitude;
+    //cout << "Введите долготу(без минут и секунд, в долях градуса): ";
+    //cin >> Longitude;
     time_voshode(data);
     recording_data(data);
 }
