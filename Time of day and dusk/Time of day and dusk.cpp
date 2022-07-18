@@ -432,6 +432,9 @@ int main()
     //cin >> Latitude;
     //cout << "Введите долготу(без минут и секунд, в долях градуса): ";
     //cin >> Longitude;
+
+
+
     time_voshode(data);
     recording_data(data);
 }
